@@ -14,3 +14,12 @@ This dataset is based on the ISBI2013 phantom; however, due to known issues with
 
 - `connectome_fbc.csv` and `connectome_nos.csv`: the ground-truth connection strength of each bundle expressed by the Fiber Bundle Capacity (FBC) and Number Of Streamlines (NOS) metrics.
 
+phantomas_dwis -b dwi/bval.txt -r dwi/bvec.txt geometry.json --res 1.0 --fov 50.0 --snr 10.0 --output dwi/snr=10.nii.gz
+phantomas_dwis -b dwi/bval.txt -r dwi/bvec.txt geometry.json --res 1.0 --fov 50.0 --snr 20.0 --output dwi/snr=20.nii.gz
+phantomas_dwis -b dwi/bval.txt -r dwi/bvec.txt geometry.json --res 1.0 --fov 50.0 --snr 30.0 --output dwi/snr=30.nii.gz
+phantomas_dwis -b dwi/bval.txt -r dwi/bvec.txt geometry.json --res 1.0 --fov 50.0 --snr 100.0 --output dwi/snr=100.nii.gz
+
+mrtransform dwi/snr=10.nii.gz -identity dwi/snr=10.nii.gz -force
+mrtransform dwi/snr=20.nii.gz -identity dwi/snr=20.nii.gz -force
+mrtransform dwi/snr=30.nii.gz -identity dwi/snr=30.nii.gz -force
+mrtransform dwi/snr=100.nii.gz -identity dwi/snr=100.nii.gz -force
