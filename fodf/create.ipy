@@ -2,24 +2,21 @@
 import numpy
 import nibabel
 
-mrtrix_path = '/Users/ale/Documents/Development/mrtrix3/bin' # Ale's patched version to extract all peaks
 for lmax in [4,6,8,10,12]:
     # Compute the TOD(s) in each voxel from the ground-truth streamlines
-    ! tckmap ../streamlines.tck TOD_lmax={lmax}.nii.gz -template ../density.nii.gz -tod {lmax} -precise -force
+    ! tckmap ../streamlines.tck lmax={lmax}.nii.gz -template ../density.nii.gz -tod {lmax} -precise -force
 
     # Normalize to obtain probability density functions, i.e., summing up to 1
-    nii = nibabel.load( f'TOD_lmax={lmax}.nii.gz' )
+    nii = nibabel.load( f'lmax={lmax}.nii.gz' )
     nii_img = nii.get_fdata()
-
     nii0_img = nii_img[:,:,:,0] * numpy.sqrt(4.0*numpy.pi)
     idx = nii0_img<1e-6
     nii0_img[ idx ] = 1.0
     nii0_img = 1.0 / nii0_img
     nii0_img[ idx ] = 0.0
-
     for i in range(nii_img.shape[3]):
         nii_img[:,:,:,i] *= nii0_img
-    nibabel.Nifti1Image( nii_img, nii.affine ).to_filename( f'TOD_lmax={lmax}.nii.gz' )
+    nibabel.Nifti1Image( nii_img, nii.affine ).to_filename( f'lmax={lmax}.nii.gz' )
 
     # Estimate the peaks
-    ! {mrtrix_path}/sh2peaks TOD_lmax={lmax}.nii.gz peaks_lmax={lmax}.nii.gz -num 3 -threshold 0.1 -mask ../wm.nii.gz -force
+    ! sh2peaks lmax={lmax}.nii.gz lmax={lmax}_peaks.nii.gz -num 3 -threshold 0.1 -mask ../wm.nii.gz -force
